@@ -50,3 +50,7 @@ cargo build --target wasm32-unknown-unknown --release
 | --- | --- |
 | **Contract ID** | `CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2` |
 | **Explorer Link** | [Stellar.expert Testnet Explorer](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2) |
+
+## Screenshot
+
+<img width="1920" height="991" alt="image" src="https://github.com/user-attachments/assets/2bea5887-db6f-4396-810c-368dd9bdbfe7" />
