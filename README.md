@@ -219,7 +219,7 @@ Open the Vite URL shown in the terminal. The app runs locally in your browser an
 3. Choose an event that is selling.
 4. Click **Pay**.
 5. Approve the transaction in Freighter.
-6. Use the transaction link in the app or the contract explorer to confirm the result.
+6. Use the transaction link in the app or the [TicketGuard Stellar.expert contract explorer](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2) to confirm the result.
 
 ### 5. Test A Real Refund
 
@@ -253,3 +253,44 @@ Both commands should pass before deployment or submission.
 - Add a dedicated indexer or backend to discover on-chain event IDs automatically.
 - Redeploy the updated cancellation-enabled contract when immediate on-chain cancellation refunds are required.
 - Add production asset handling for real USDC or a campus-approved stablecoin flow.
+
+## Deployment Options
+
+TicketGuard is currently a static Vite frontend that talks directly to Freighter and the Stellar testnet RPC, so the safest free-tier deployment targets are static hosting platforms.
+
+### Recommended: Vercel
+
+Vercel is the preferred option for this demo because it handles Vite projects cleanly, provides automatic HTTPS, and does not require a running backend server.
+
+Use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Framework Preset | Vite |
+| Install Command | `npm ci` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+Add environment variables only if using a different deployed contract:
+
+```bash
+VITE_TICKETGUARD_CONTRACT_ID=YOUR_TESTNET_CONTRACT_ID
+VITE_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
+```
+
+### Alternative: Render Static Site
+
+Render is also suitable as a static site host. Choose **Static Site**, connect the GitHub repository, and use:
+
+| Setting | Value |
+| --- | --- |
+| Build Command | `npm ci && npm run build` |
+| Publish Directory | `dist` |
+
+### Other Static Hosts
+
+Netlify, GitHub Pages, Cloudflare Pages, and similar static hosts can also run the frontend as long as they build with Node.js and publish the `dist` folder.
+
+### When A Backend Is Needed
+
+A backend is not required for the current demo. Add one only if the project grows to include secure production authentication, server-side event indexing, admin approvals backed by a database, email notifications, or fiat/GCash on-ramp integration. If a backend is added later, Render or Railway would be more appropriate than static-only hosting.
