@@ -102,3 +102,47 @@ fn test_buy_after_deadline_fails() {
     let result = std::panic::catch_unwind(|| client.buy_ticket(&0_u32, &attendee));
     assert!(result.is_err());
 }
+
+#[test]
+fn test_cancelled_event_allows_immediate_refund() {
+    let env = Env::default();
+    let contract_id = env.register_contract(None, TicketGuard);
+    let client = TicketGuardClient::new(&env, &contract_id);
+
+    let organizer = Address::random(&env);
+    let attendee = Address::random(&env);
+    let price = 200_000_000_i128;
+    let deadline = env.ledger().timestamp() + 3600;
+
+    client.create_event(&organizer, &price, &deadline);
+    client.buy_ticket(&0_u32, &attendee);
+    client.cancel_event(&0_u32);
+
+    assert!(client.is_cancelled(&0_u32));
+    client.refund(&0_u32, &attendee);
+    assert_eq!(client.get_balance(&0_u32, &attendee), 0);
+    assert_eq!(client.total_collected(&0_u32), 0);
+}
+
+#[test]
+fn test_cancelled_event_blocks_release_and_new_purchases() {
+    let env = Env::default();
+    let contract_id = env.register_contract(None, TicketGuard);
+    let client = TicketGuardClient::new(&env, &contract_id);
+
+    let organizer = Address::random(&env);
+    let attendee = Address::random(&env);
+    let late_attendee = Address::random(&env);
+    let price = 200_000_000_i128;
+    let deadline = env.ledger().timestamp() + 3600;
+
+    client.create_event(&organizer, &price, &deadline);
+    client.buy_ticket(&0_u32, &attendee);
+    client.cancel_event(&0_u32);
+
+    let buy_result = std::panic::catch_unwind(|| client.buy_ticket(&0_u32, &late_attendee));
+    assert!(buy_result.is_err());
+
+    let release_result = std::panic::catch_unwind(|| client.release_funds(&0_u32));
+    assert!(release_result.is_err());
+}
