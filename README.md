@@ -182,6 +182,14 @@ Use:
 
 <img width="1920" height="991" alt="TicketGuard application screenshot" src="https://github.com/user-attachments/assets/2bea5887-db6f-4396-810c-368dd9bdbfe7" />
 
+## Contract Activity Proof
+
+The deployed testnet contract is publicly verifiable on Stellar.expert. The screenshot below shows the contract activity history with successful `create_event`, `buy_ticket`, and `refund` calls.
+
+[Open the live TicketGuard contract on Stellar.expert](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2)
+
+![Stellar.expert contract activity proof](docs/assets/stellar-expert-contract-proof.png)
+
 ## Local Testing Guide For Checkers
 
 This section is written for reviewers who want to test the app safely on their own machines.
