@@ -5,7 +5,7 @@ import {
   signAuthEntry,
   signTransaction,
 } from "@stellar/freighter-api";
-import { contract } from "@stellar/stellar-sdk";
+import { Address, contract, rpc, scValToNative, xdr } from "@stellar/stellar-sdk";
 import { CONTRACT_ID, NETWORK_PASSPHRASE, RPC_URL } from "../config";
 import type { WalletState } from "../types";
 
@@ -143,6 +143,26 @@ export async function getClient(publicKey?: string): Promise<TicketGuardClient> 
     signAuthEntry: signAuthEntryForSdk,
     signTransaction,
   }) as Promise<TicketGuardClient>;
+}
+
+export async function getOnChainEventIds(): Promise<number[]> {
+  const server = new rpc.Server(RPC_URL);
+  const ledgerKey = xdr.LedgerKey.contractData(
+    new xdr.LedgerKeyContractData({
+      contract: Address.fromString(CONTRACT_ID).toScAddress(),
+      key: xdr.ScVal.scvLedgerKeyContractInstance(),
+      durability: xdr.ContractDataDurability.persistent(),
+    }),
+  );
+  const entry = await server.getLedgerEntry(ledgerKey);
+  const storage = entry.val.contractData().val().instance().storage();
+  const eventsEntry = storage?.find((item) => scValToNative(item.key()) === "EVENTS");
+  const eventIds = eventsEntry ? scValToNative(eventsEntry.val()) : [];
+
+  if (!Array.isArray(eventIds)) return [];
+  return eventIds
+    .map((eventId) => Number(eventId))
+    .filter((eventId) => Number.isInteger(eventId) && eventId >= 0);
 }
 
 export async function submitTransaction<T>(

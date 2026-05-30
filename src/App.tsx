@@ -37,6 +37,7 @@ import {
 import {
   connectWallet,
   getClient,
+  getOnChainEventIds,
   isTestnet,
   loadWalletState,
   submitTransaction,
@@ -203,6 +204,7 @@ function App() {
   const [view, setView] = useState<View>("marketplace");
   const [query, setQuery] = useState("");
   const [totals, setTotals] = useState<Totals>(EMPTY_TOTALS);
+  const [, setOnChainEventIds] = useState<number[]>([]);
   const [busy, setBusy] = useState("");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [lastHash, setLastHash] = useState("");
@@ -362,6 +364,20 @@ function App() {
     },
     [pushToast, selectedId, wallet?.address],
   );
+
+  const refreshOnChainEvents = useCallback(async () => {
+    try {
+      const eventIds = await getOnChainEventIds();
+      setOnChainEventIds(eventIds);
+      setEventForm((current) => ({
+        ...current,
+        expectedId: String(eventIds.length),
+      }));
+      return eventIds;
+    } catch {
+      return [];
+    }
+  }, []);
 
   const handleConnect = async () => {
     setBusy("connect");
@@ -587,7 +603,10 @@ function App() {
 
     const deadline = deadlineFromLocal(eventForm.deadline);
     const ticketPrice = BigInt(eventForm.ticketPrice || "0");
-    const eventId = Number.parseInt(eventForm.expectedId || "0", 10);
+    const chainEventIds = await refreshOnChainEvents();
+    const fallbackEventId = Number.parseInt(eventForm.expectedId || "0", 10);
+    const eventId =
+      chainEventIds.length > 0 ? chainEventIds.length : fallbackEventId;
     const capacity = Number.parseInt(eventForm.capacity || "0", 10);
 
     if (!deadline || ticketPrice <= 0n || Number.isNaN(eventId) || eventId < 0 || capacity <= 0) {
@@ -641,6 +660,7 @@ function App() {
           ? `Event #${eventId} created on-chain and sent for admin review.`
           : `Event #${eventId} created on-chain and published.`,
       );
+      void refreshOnChainEvents();
       await refreshTotals(eventId, wallet.address);
     } catch (error) {
       pushToast(
@@ -835,8 +855,16 @@ function App() {
     }
   };
 
-  const handleTrackEvent = () => {
-    const eventId = Number.parseInt(String(selectedId), 10);
+  const handleTrackEvent = async () => {
+    const chainEventIds = await refreshOnChainEvents();
+    const defaultId =
+      selectedId >= 0 ? selectedId : Math.max(chainEventIds.length - 1, 0);
+    const enteredId = window.prompt(
+      "Enter the on-chain event ID to track from the deployed contract.",
+      String(defaultId),
+    );
+    if (enteredId === null) return;
+    const eventId = Number.parseInt(enteredId, 10);
     if (Number.isNaN(eventId) || eventId < 0) return;
     if (!events.some((event) => event.id === eventId)) {
       saveEvents([
@@ -851,6 +879,8 @@ function App() {
           updatedAt: Date.now(),
         },
       ]);
+      setSelectedId(eventId);
+      pushToast("success", `Tracking on-chain event #${eventId}.`);
     }
     void refreshTotals(eventId);
   };
@@ -859,6 +889,7 @@ function App() {
     const storedEvents = readSavedEvents();
     const initialEvents = storedEvents.length > 0 ? storedEvents : starterEvents;
     setEvents(initialEvents);
+    void refreshOnChainEvents();
     const storedProfiles = readProfiles();
     const hasDean = storedProfiles.some(
       (profile) => profile.email?.toLowerCase() === DEFAULT_STUDENT.email,
@@ -875,12 +906,11 @@ function App() {
     setTickets(readTickets());
     setAdminSettings(readAdminSettings());
     setSelectedId(initialEvents[0]?.id ?? 0);
-    setEventForm((current) => ({ ...current, expectedId: "0" }));
 
     void loadWalletState().then((state) => {
       if (state) setWallet(state);
     });
-  }, []);
+  }, [refreshOnChainEvents]);
 
   useEffect(() => {
     if (!isAdmin && (view === "admin" || view === "organizer")) {
