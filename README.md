@@ -190,7 +190,7 @@ The current live deployment uses Vercel. Use the default Vite settings:
 
 ### Vercel Demo Limits
 
-The Vercel application is a static frontend connected directly to Freighter and the Stellar testnet RPC. It is suitable for judges to test the escrow flow, but it has the following demo limits:
+The Vercel application is a static frontend connected directly to Freighter and the Stellar testnet RPC. It is suitable for reviewing the escrow flow, but it has the following demo limits:
 
 - Accounts are stored in browser local storage, so they are not shared across devices or browsers.
 - Event metadata is stored locally for the UI, while escrow balances and ticket/refund actions are verified on-chain.
@@ -207,7 +207,7 @@ Primary application screenshot:
 
 <img width="1920" height="991" alt="TicketGuard application screenshot" src="https://github.com/user-attachments/assets/2bea5887-db6f-4396-810c-368dd9bdbfe7" />
 
-Additional screenshots are grouped by the account type a checker chooses during login.
+Additional screenshots are grouped by the account type chosen during login.
 
 <details>
 <summary><strong>Expand to view Regular Access screenshots</strong></summary>
