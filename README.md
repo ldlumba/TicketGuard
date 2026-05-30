@@ -8,6 +8,16 @@ Campus event payments are often handled through informal channels. If an event i
 
 This project was built for a demo environment, so it intentionally uses local browser storage for accounts and event metadata while sending payment, release, and refund actions to the deployed Stellar testnet contract.
 
+## Submission Checklist
+
+| Requirement | Status |
+| --- | --- |
+| Deployed Stellar smart contract | [Stellar testnet contract](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2) |
+| Source code repository | [GitHub repository](https://github.com/ldlumba/TicketGuard) |
+| Project README | This document includes the project description, feature list, setup guide, operation guide, safety notes, screenshots, and deployment notes. |
+| Screenshots or demo proof | See **Screenshot** and **Contract Activity Proof** below. |
+| Deployed frontend | [TicketGuard on Vercel](https://ticket-guard.vercel.app) |
+
 ## What It Includes
 
 - Vite, React, and TypeScript frontend.
@@ -29,6 +39,14 @@ This project was built for a demo environment, so it intentionally uses local br
 | Network | Stellar testnet |
 | Contract ID | `CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2` |
 | Explorer | [View on Stellar.expert](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2) |
+
+## Deployed Frontend
+
+The live demo is deployed on Vercel:
+
+[https://ticket-guard.vercel.app](https://ticket-guard.vercel.app)
+
+Use Freighter on Stellar testnet when testing contract actions from the deployed site.
 
 ## Demo Accounts
 
@@ -161,13 +179,27 @@ If you change and redeploy the contract, also update the frontend contract ID th
 
 ### Vercel
 
-Use the default Vite settings:
+The current live deployment uses Vercel. Use the default Vite settings:
 
 | Setting | Value |
 | --- | --- |
+| Live URL | [https://ticket-guard.vercel.app](https://ticket-guard.vercel.app) |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 | Install Command | `npm ci` |
+
+### Vercel Demo Limits
+
+The Vercel application is a static frontend connected directly to Freighter and the Stellar testnet RPC. It is suitable for judges to test the escrow flow, but it has the following demo limits:
+
+- Accounts are stored in browser local storage, so they are not shared across devices or browsers.
+- Event metadata is stored locally for the UI, while escrow balances and ticket/refund actions are verified on-chain.
+- A fresh browser may need a newly created or tracked on-chain event before purchases are available.
+- The connected Freighter wallet must be on Stellar testnet and funded with testnet XLM.
+- Admin actions are demo-gated by local login credentials, not by production-grade backend authentication.
+- The currently deployed contract supports real refunds after the confirmation deadline if funds were not released.
+- Immediate cancellation refunds are available as a clearly labelled frontend simulation unless the updated cancellation-enabled contract is redeployed.
+- The app should not be used with mainnet funds, private keys, or production user data.
 
 ### Render Static Site
 
