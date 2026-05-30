@@ -201,18 +201,55 @@ The Vercel application is a static frontend connected directly to Freighter and 
 - Immediate cancellation refunds are available as a clearly labelled frontend simulation unless the updated cancellation-enabled contract is redeployed.
 - The app should not be used with mainnet funds, private keys, or production user data.
 
-### Render Static Site
+## Screenshots
 
-Use:
-
-| Setting | Value |
-| --- | --- |
-| Build Command | `npm ci && npm run build` |
-| Publish Directory | `dist` |
-
-## Screenshot
+Primary application screenshot:
 
 <img width="1920" height="991" alt="TicketGuard application screenshot" src="https://github.com/user-attachments/assets/2bea5887-db6f-4396-810c-368dd9bdbfe7" />
+
+Additional screenshots are grouped by the account type a checker chooses during login.
+
+<details>
+<summary><strong>Expand to view Regular Access screenshots</strong></summary>
+
+### Regular Access - Login
+
+![Regular access login screen](docs/screenshots/regular-access/landing.png)
+
+### Regular Access - Events
+
+![Regular access event marketplace](docs/screenshots/regular-access/regHome.png)
+
+### Regular Access - Tickets
+
+![Regular access ticket dashboard](docs/screenshots/regular-access/regTickets.png)
+
+</details>
+
+<details>
+<summary><strong>Expand to view Admin Access screenshots</strong></summary>
+
+### Admin Access - Login
+
+![Admin access login screen](docs/screenshots/admin-access/landing.png)
+
+### Admin Access - Events
+
+![Admin access event marketplace](docs/screenshots/admin-access/adminEvents.png)
+
+### Admin Access - Host Events
+
+![Admin access host event tools](docs/screenshots/admin-access/adminOrganize.png)
+
+### Admin Access - Ticket View
+
+![Admin access ticket view](docs/screenshots/admin-access/adminTickets.png)
+
+### Admin Access - Dashboard
+
+![Admin access dashboard](docs/screenshots/admin-access/adminDashboard.png)
+
+</details>
 
 ## Contract Activity Proof
 
@@ -222,115 +259,9 @@ The deployed testnet contract is publicly verifiable on Stellar.expert. The scre
 
 ![Stellar.expert contract activity proof](docs/assets/stellar-expert-contract-proof.png)
 
-## Local Testing Guide For Checkers
-
-This section is written for reviewers who want to test the app safely on their own machines.
-
-### 1. Clone And Install
-
-```bash
-git clone https://github.com/ldlumba/TicketGuard.git
-cd TicketGuard
-npm ci
-```
-
-`npm ci` installs exactly the versions in `package-lock.json`, which makes local testing more repeatable.
-
-### 2. Start The Frontend
-
-```bash
-npm run dev
-```
-
-Open the Vite URL shown in the terminal. The app runs locally in your browser and stores demo account/event metadata in local storage.
-
-### 3. Prepare Freighter
-
-1. Install Freighter.
-2. Create or import a testnet wallet.
-3. Switch Freighter to testnet.
-4. Fund the testnet wallet through Freighter or Stellar testnet friendbot.
-5. Never use a wallet containing mainnet funds for this demo.
-
-### 4. Test A Ticket Purchase
-
-1. Log in as the student demo account.
-2. Connect Freighter.
-3. Choose an event that is selling.
-4. Click **Pay**.
-5. Approve the transaction in Freighter.
-6. Use the transaction link in the app or the [TicketGuard Stellar.expert contract explorer](https://stellar.expert/explorer/testnet/contract/CA5YGLH5YSBXQWCXUE63NSKGU27HJ35IN7OMOUMRDPZ5Z2RPOOOEMAO2) to confirm the result.
-
-### 5. Test A Real Refund
-
-1. Use the admin account and organizer wallet to create an event with a short confirmation deadline.
-2. Buy a ticket as a student.
-3. Wait until after the deadline.
-4. Do not release funds.
-5. Log in as the student and click **Refund**.
-6. Approve the transaction in Freighter.
-
-### 6. Test The Demo Refund Simulation
-
-Use **Demo Refund** only when you need to demonstrate the cancelled-event refund experience without redeploying the updated contract. This action changes local browser state only and will not appear on Stellar.expert.
-
-### 7. Reset Local Demo Data
-
-If local testing gets messy, clear the site data for the local Vite URL in your browser. This removes local demo accounts, saved events, and local ticket records. It does not affect the Stellar testnet contract.
-
-### 8. Validate The Project
-
-```bash
-npm run lint
-npm run build
-```
-
-Both commands should pass before deployment or submission.
-
 ## Notes For Future Work
 
 - Replace local browser accounts with a backend authentication service.
 - Add a dedicated indexer or backend to discover on-chain event IDs automatically.
 - Redeploy the updated cancellation-enabled contract when immediate on-chain cancellation refunds are required.
 - Add production asset handling for real USDC or a campus-approved stablecoin flow.
-
-## Deployment Options
-
-TicketGuard is currently a static Vite frontend that talks directly to Freighter and the Stellar testnet RPC, so the safest free-tier deployment targets are static hosting platforms.
-
-### Recommended: Vercel
-
-Vercel is the preferred option for this demo because it handles Vite projects cleanly, provides automatic HTTPS, and does not require a running backend server.
-
-Use these settings:
-
-| Setting | Value |
-| --- | --- |
-| Framework Preset | Vite |
-| Install Command | `npm ci` |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-
-Add environment variables only if using a different deployed contract:
-
-```bash
-VITE_TICKETGUARD_CONTRACT_ID=YOUR_TESTNET_CONTRACT_ID
-VITE_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
-```
-
-### Alternative: Render Static Site
-
-Render is also suitable as a static site host. Choose **Static Site**, connect the GitHub repository, and use:
-
-| Setting | Value |
-| --- | --- |
-| Build Command | `npm ci && npm run build` |
-| Publish Directory | `dist` |
-
-### Other Static Hosts
-
-Netlify, GitHub Pages, Cloudflare Pages, and similar static hosts can also run the frontend as long as they build with Node.js and publish the `dist` folder.
-
-### When A Backend Is Needed
-
-A backend is not required for the current demo. Add one only if the project grows to include secure production authentication, server-side event indexing, admin approvals backed by a database, email notifications, or fiat/GCash on-ramp integration. If a backend is added later, Render or Railway would be more appropriate than static-only hosting.
